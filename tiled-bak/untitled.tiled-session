@@ -1,0 +1,29 @@
+{
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+        "ForestJump.tmj#tilemap_packed": {
+            "scaleInEditor": 1
+        },
+        "ForestJump.tmx#tilemap_packed": {
+            "scaleInEditor": 1
+        }
+    },
+    "last.imagePath": "/home/deck/repos/CMPM120/Forest-Jump/assets",
+    "map.lastUsedFormat": "json",
+    "map.tileHeight": 18,
+    "map.tileWidth": 18,
+    "map.width": 120,
+    "openFiles": [
+    ],
+    "project": "untitled.tiled-project",
+    "property.type": "bool",
+    "recentFiles": [
+    ],
+    "tileset.embedInMap": true,
+    "tileset.tileSize": {
+        "height": 18,
+        "width": 18
+    }
+}
