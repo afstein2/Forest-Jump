@@ -1,39 +1,81 @@
 {
-    "activeFile": "",
+    "activeFile": "platformer-level-1.tmj",
     "expandedProjectPaths": [
+        "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "": {
+            "scaleInDock": 0.75,
             "scaleInEditor": 1
         },
-        "platformer-level-1.tmj": {
-            "scale": 1.24,
+        "#foliagePack_default": {
+            "dynamicWrapping": true
+        },
+        "#foliagePack_vector": {
+            "dynamicWrapping": false
+        },
+        "/home/deck/repos/CMPM120/Forest-Jump/tiled-bak/ForestJump.tmj": {
+            "scale": 0.49655092592592587,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 376.2096774193549,
-                "y": 228.6290322580645
+                "x": 1080.4531257284043,
+                "y": -258.78513822199443
             }
+        },
+        "/home/deck/repos/CMPM120/Forest-Jump/tiled-bak/ForestJump.tmj#tilemap_packed": {
+            "scaleInDock": 1
+        },
+        "/home/deck/repos/CMPM120/Forest-Jump/tiled-bak/Treesbackground.tmj": {
+            "scale": 0.25,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 1562,
+                "y": 738
+            }
+        },
+        "/home/deck/repos/CMPM120/Forest-Jump/tiled-bak/Treesbackground.tmj#foliagePack_vector": {
+            "dynamicWrapping": false,
+            "scaleInDock": 0.75,
+            "scaleInEditor": 0.33
+        },
+        "platformer-level-1.tmj": {
+            "scale": 1,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 275.5,
+                "y": 181.5
+            }
+        },
+        "platformer-level-1.tmj#foliagePack_vector": {
+            "scaleInDock": 0.33,
+            "scaleInEditor": 1
         },
         "platformer-level-1.tmj#kenny_tilemap_packed": {
             "scaleInDock": 1
         }
     },
-    "last.imagePath": "/Users/stein/repos/CMPM120/StarterPlatformer/assets",
+    "last.imagePath": "/home/deck/repos/CMPM120/Forest-Jump/assets",
     "map.lastUsedFormat": "json",
-    "map.tileHeight": 18,
-    "map.tileWidth": 18,
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
     "map.width": 120,
     "openFiles": [
+        "platformer-level-1.tmj"
     ],
     "project": "starter-platformer.tiled-project",
     "property.type": "bool",
     "recentFiles": [
-        "platformer-level-1.tmj"
+        "platformer-level-1.tmj",
+        "/home/deck/repos/CMPM120/Forest-Jump/tiled-bak/Treesbackground.tmj",
+        "/home/deck/repos/CMPM120/Forest-Jump/tiled-bak/ForestJump.tmj"
     ],
     "tileset.embedInMap": true,
+    "tileset.margin": 0,
+    "tileset.spacing": 0,
     "tileset.tileSize": {
-        "height": 18,
-        "width": 18
-    }
+        "height": 32,
+        "width": 32
+    },
+    "tileset.type": 0
 }
