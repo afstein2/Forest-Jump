@@ -35,13 +35,13 @@ class Platformer extends Phaser.Scene {
         // Create Score Text
         this.score = 0;
 
-        this.scoreText = this.add.text(300, 152, '0', {
+        this.scoreText = this.add.text(game.config.width / 5.2, game.config.height / 5.5, '0', {
             fontSize: '128px',
             fill: '#ffffff'
         }).setScrollFactor(0).setDepth(100).setScale(0.5)
 
         // // Coin icon for UI
-        this.coinIcon = this.add.image(275, 180, "coin_icon");
+        this.coinIcon = this.add.image(game.config.width / 5.5, game.config.height / 4.7,  "coin_icon");
         this.coinIcon.setScrollFactor(0);
         this.coinIcon.setScale(3);
         this.coinIcon.setDepth(1000);
