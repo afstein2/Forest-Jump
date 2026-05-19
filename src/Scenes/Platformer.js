@@ -35,16 +35,16 @@ class Platformer extends Phaser.Scene {
         // Create Score Text
         this.score = 0;
 
-        this.scoreText = this.add.text(16, 16, 'Coins: 0', {
-            fontSize: '32px',
+        this.scoreText = this.add.text(300, 152, '0', {
+            fontSize: '128px',
             fill: '#ffffff'
-        });
+        }).setScrollFactor(0).setDepth(100).setScale(0.5)
 
         // // Coin icon for UI
-        // this.coinIcon = this.add.image(10, 515, "coin_icon");
-        // //this.coinIcon.setScrollFactor(0);
-        // this.coinIcon.setScale(0.5);
-        // this.coinIcon.setDepth(1000);
+        this.coinIcon = this.add.image(275, 180, "coin_icon");
+        this.coinIcon.setScrollFactor(0);
+        this.coinIcon.setScale(3);
+        this.coinIcon.setDepth(1000);
 
 
         // Create a new tilemap game object which uses 18x18 pixel tiles, and is
@@ -130,7 +130,7 @@ class Platformer extends Phaser.Scene {
 
         my.sprite.player = this.physics.add.sprite(
             game.config.width / 4,
-            20,
+            930,
             "platformer_characters",
             "tile_0000.png"
         );
@@ -154,7 +154,7 @@ class Platformer extends Phaser.Scene {
             (obj1, obj2) => {
 
                 this.score += 1;
-                this.scoreText.setText(`Coins: ${this.score}`);
+                this.scoreText.setText(`${this.score}`);
 
                 obj2.destroy();
             }
@@ -165,6 +165,9 @@ class Platformer extends Phaser.Scene {
 
         cursors = this.input.keyboard.createCursorKeys();
         this.rKey = this.input.keyboard.addKey('R');
+
+        // Pause Menu
+        this.pKey = this.input.keyboard.addKey('P');
 
 
         // DEBUG ---------------------------------------------------------
@@ -225,32 +228,19 @@ class Platformer extends Phaser.Scene {
         this.cameras.main.setDeadzone(50, 50);
         this.cameras.main.setZoom(this.SCALE);
 
-
-        // UI CAMERA / IGNORE SYSTEM ------------------------------------
-
-        this.uiCamera = this.cameras.add(
-            0,
-            0,
-            game.config.width,
-            game.config.height
-        );
-
-        this.uiCamera.ignore([
-            this.groundLayer,
-            this.treesLayer,
-            my.sprite.player,
-            this.coinGroup,
-            my.vfx.walking,
-            ...this.coins
-        ]);
-
-        this.cameras.main.ignore(this.scoreText);
-
-        this.physics.world.createDebugGraphic();
-        this.uiCamera.ignore(this.physics.world.debugGraphic);
     }
 
     update() {
+
+
+
+
+        // Show Pause Menu Screen
+
+        if (Phaser.Input.Keyboard.JustDown(this.pKey)) {
+            this.scene.pause();
+            this.scene.launch('pauseScene');
+        }
 
         // Move Left
         if(cursors.left.isDown) {
