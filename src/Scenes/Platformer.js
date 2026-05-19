@@ -32,6 +32,18 @@ class Platformer extends Phaser.Scene {
         this.physics.world.TILE_BIAS = 32;
 
 
+
+        // CREATE UI  -----------------------------------------------
+
+        // Create FPS Text
+        if (my.settings.fps) {
+            this.fpsText = this.add.text(game.config.width / 1.3, game.config.height / 5.5, '', {
+                fontSize: '48px',
+                fill: '#ffffff'
+            }).setScrollFactor(0).setDepth(200).setScale(0.5);
+        }
+
+
         // Create Score Text
         this.score = 0;
 
@@ -45,6 +57,10 @@ class Platformer extends Phaser.Scene {
         this.coinIcon.setScrollFactor(0);
         this.coinIcon.setScale(3);
         this.coinIcon.setDepth(1000);
+
+
+
+        // SETUP MAP & TILESETS -----------------------------------------------
 
 
         // Create a new tilemap game object which uses 18x18 pixel tiles, and is
@@ -99,7 +115,11 @@ class Platformer extends Phaser.Scene {
         this.groundLayer.setScale(this.SCALE);
 
 
-        // OBJECTS (COINS) -----------------------------------------------
+        // OBJECTS  -----------------------------------------------
+
+
+
+        // Coins 
 
         // Find coins in the "Objects" layer in Phaser
         this.coins = this.map.createFromObjects("Objects", {
@@ -116,14 +136,49 @@ class Platformer extends Phaser.Scene {
             coin.y *= this.SCALE;
         });
 
+        this.physics.world.enable(this.coins, Phaser.Physics.Arcade.STATIC_BODY);
 
-        // Convert to physics objects
-        this.physics.world.enable(
-            this.coins,
-            Phaser.Physics.Arcade.STATIC_BODY
-        );
 
+        // End Flags
+        this.flags = this.map.createFromObjects("Objects", {
+            name: "flag",
+            key: "tilemap_sheet",
+            frame: 111
+        });
+
+
+        // Scale and reposition flags
+        this.flags.forEach((flag) => {
+            flag.setScale(this.SCALE);
+            flag.x *= this.SCALE;
+            flag.y *= this.SCALE;
+        });
+
+        
+        this.physics.world.enable(this.flags, Phaser.Physics.Arcade.STATIC_BODY);
+
+
+        // Spikes
+        this.spikes = this.map.createFromObjects("Objects", {
+            name: "spike",
+            key: "tilemap_sheet",
+            frame: 68
+        });
+
+        // Scale and reposition spikes
+        this.spikes.forEach((spike) => {
+            spike.setScale(this.SCALE);
+            spike.x *= this.SCALE;
+            spike.y *= this.SCALE;
+        });
+
+        this.physics.world.enable(this.spikes, Phaser.Physics.Arcade.STATIC_BODY);
+
+        // Add groups
         this.coinGroup = this.add.group(this.coins);
+        this.flagGroup = this.add.group(this.flags);
+        this.spikeGroup = this.add.group(this.spikes);
+
 
 
         // PLAYER --------------------------------------------------------
@@ -161,24 +216,48 @@ class Platformer extends Phaser.Scene {
         );
 
 
+
+        // FLAG COLLISION -----------------------------------------------
+
+        this.physics.add.overlap(
+            my.sprite.player,
+            this.flagGroup,
+            (obj1, obj2) => {
+
+                // go next level
+                this.scene.start("platformerScene2");
+
+            }
+        );
+
+        // SPIKE COLLISION -----------------------------------------------
+
+
+        this.physics.add.overlap(
+            my.sprite.player,
+            this.spikeGroup,
+            (obj1, obj2) => {
+
+                // Restart Scene
+                this.scene.restart(); 
+
+            }
+        );
+
+
         // INPUT ---------------------------------------------------------
 
         cursors = this.input.keyboard.createCursorKeys();
         this.rKey = this.input.keyboard.addKey('R');
-
-        // Pause Menu
         this.pKey = this.input.keyboard.addKey('P');
-
+        this.aKey = this.input.keyboard.addKey('A');
+        this.dKey = this.input.keyboard.addKey('D');
 
         // DEBUG ---------------------------------------------------------
 
-        this.input.keyboard.on('keydown-D', () => {
-
-            this.physics.world.drawDebug =
-                !this.physics.world.drawDebug;
-
+        this.input.keyboard.on('keydown-O', () => {
+            this.physics.world.drawDebug = !this.physics.world.drawDebug;
             this.physics.world.debugGraphic.clear();
-
         }, this);
 
 
@@ -233,7 +312,10 @@ class Platformer extends Phaser.Scene {
     update() {
 
 
-
+        // Update FPS Text
+        if (my.settings.fps && this.fpsText) {
+            this.fpsText.setText(`FPS: ${Math.floor(this.game.loop.actualFps)}`);
+        }
 
         // Show Pause Menu Screen
 
@@ -243,7 +325,7 @@ class Platformer extends Phaser.Scene {
         }
 
         // Move Left
-        if(cursors.left.isDown) {
+        if (this.aKey.isDown || cursors.left.isDown) {
 
             my.sprite.player.setAccelerationX(-this.ACCELERATION);
             my.sprite.player.resetFlip();
@@ -264,7 +346,9 @@ class Platformer extends Phaser.Scene {
 
 
         // Move Right
-        } else if(cursors.right.isDown) {
+        } 
+        
+        else if(this.dKey.isDown || cursors.right.isDown) {
 
             my.sprite.player.setAccelerationX(this.ACCELERATION);
             my.sprite.player.setFlip(true, false);
@@ -298,9 +382,9 @@ class Platformer extends Phaser.Scene {
             my.sprite.player.anims.play('jump');
         }
 
-        if(
+        if (
             my.sprite.player.body.blocked.down &&
-            Phaser.Input.Keyboard.JustDown(cursors.up)
+            (Phaser.Input.Keyboard.JustDown(cursors.space) || Phaser.Input.Keyboard.JustDown(cursors.up))
         ) {
             my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
         }

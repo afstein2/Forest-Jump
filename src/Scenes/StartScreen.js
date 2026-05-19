@@ -1,4 +1,4 @@
-class StartScene extends Phaser.Scene {
+class StartScreen extends Phaser.Scene {
     constructor() {
         super("startScene");
     }
@@ -7,34 +7,61 @@ class StartScene extends Phaser.Scene {
         const centerX = game.config.width / 2;
         const centerY = game.config.height / 2;
 
-        // Background color
         this.cameras.main.setBackgroundColor('#73bde2');
 
-        // Title text
-        this.add.text(centerX, centerY - 100, 'Forest Jump', {
-            fontSize: '48px',
+        // Title
+        this.add.text(centerX, centerY - 150, 'Forest Jump', {
+            fontSize: '64px',
             fill: '#ffffff',
             fontStyle: 'bold'
         }).setOrigin(0.5);
 
-        // Blinking start prompt
-        const startText = this.add.text(centerX, centerY + 50, 'Press SPACE to Start', {
-            fontSize: '24px',
-            fill: '#ffffff',
-        }).setOrigin(0.5);
-
-        // Blink effect
-        this.tweens.add({
-            targets: startText,
-            alpha: 0,
-            duration: 500,
-            yoyo: true,
-            repeat: -1
-        });
-
-        // Start game on SPACE
-        this.input.keyboard.once('keydown-SPACE', () => {
+        // Play Button
+        this.createButton(centerX, centerY, 'Play', () => {
             this.scene.start('loadScene');
         });
+
+        // Settings Button
+        this.createButton(centerX, centerY + 80, 'Settings', () => {
+            this.scene.start('settingsScene');
+        });
+    }
+
+    createButton(x, y, label, callback) {
+        const width = 250;
+        const height = 60;
+        const radius = 20;
+
+        const btn = this.add.graphics();
+
+        const drawBtn = (color, alpha) => {
+            btn.clear();
+            btn.fillStyle(color, alpha);
+            btn.fillRoundedRect(x - width/2, y - height/2, width, height, radius);
+        };
+
+        drawBtn(0x000000, 0.5);
+
+        // Invisible interactive zone on top
+        const hitArea = this.add.rectangle(x, y, width, height, 0xffffff, 0)
+            .setInteractive()
+            .setOrigin(0.5);
+
+        const text = this.add.text(x, y, label, {
+            fontSize: '28px',
+            fill: '#ffffff'
+        }).setOrigin(0.5);
+
+        hitArea.on('pointerover', () => {
+            drawBtn(0xffffff, 0.3);
+            text.setStyle({ fontSize: '30px' });
+        });
+
+        hitArea.on('pointerout', () => {
+            drawBtn(0x000000, 0.5);
+            text.setStyle({ fontSize: '28px' });
+        });
+
+        hitArea.on('pointerdown', callback);
     }
 }

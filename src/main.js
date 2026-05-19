@@ -1,4 +1,7 @@
 
+//
+// An example of putting sprites on the screen using Phaser
+// 
 // Art assets from Kenny Assets "Shape Characters" set:
 // https://kenney.nl/assets/shape-characters
 
@@ -25,11 +28,15 @@ let config = {
 
     width: window.innerWidth,
     height: window.innerHeight,
-    scene: [StartScene, Load, Platformer, PauseScene]
+    scale: {
+        mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
+    scene: [StartScreen, Load, Platformer, Platformer2, PauseMenu, Settings]
 }
 
 var cursors;
 const SCALE = 2.0;
-var my = {sprite: {}, text: {}, vfx: {}};
+var my = {sprite: {}, text: {}, vfx: {}, settings: {fps: false}};
 
 const game = new Phaser.Game(config);
