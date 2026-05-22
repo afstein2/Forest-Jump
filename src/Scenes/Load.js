@@ -16,6 +16,8 @@ class Load extends Phaser.Scene {
 
         this.load.image("coin_icon", "Coin.png");
 
+        this.load.image('clouds', 'clouds_small.png');
+
 
         // Load the tilemap as a spritesheet
         this.load.spritesheet("tilemap_sheet", "tilemap_packed.png", {

@@ -4,8 +4,7 @@ class Settings extends Phaser.Scene {
     }
 
     create() {
-        const centerX = game.config.width / 2;
-        const centerY = game.config.height / 2;
+
 
         this.cameras.main.setBackgroundColor('#73bde2');
 
@@ -123,6 +122,8 @@ class Settings extends Phaser.Scene {
             drawBox(checked);
             onChange(checked);
         });
+
+
 
         hitArea.on('pointerover', () => {
             box.clear();

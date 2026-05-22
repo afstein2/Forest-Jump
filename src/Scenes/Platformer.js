@@ -19,11 +19,34 @@ class Platformer extends Phaser.Scene {
         this.setupPhysics();
         this.setupUI();
         this.setupMap();      // calls overrideable method
+
+        //this.scale.on('fit', this.resize, this);
+
+        this.clouds = this.add.tileSprite(
+            0,
+            -this.scale.height * 0.5,
+            this.scale.width,
+            this.scale.height * 0.89,
+            'clouds'
+        )
+        .setOrigin(0,0)//.setOrigin(-0.4, 0.4)
+        .setScrollFactor(0)
+        //.setScale(0.9)//.setScale(1)//.setScale(0.6);
+
+        this.clouds.tileScaleX = 0.4; //0.4
+        this.clouds.tileScaleY = 0.4;
+
+        console.log("Scale width:", this.scale.width, "Scale height:", this.scale.height);
+        console.log("Game size width:", this.scale.gameSize.width, "Game size height:", this.scale.gameSize.height);
+        console.log("Camera width:", this.cameras.main.width, "Camera height:", this.cameras.main.height);
+        console.log("Window width:", window.innerWidth, "Window height:", window.innerHeight);
+
         this.setupObjects();
         this.setupPlayer();
         this.setupInput();
         this.setupVFX();
         this.setupCamera();
+        
     }
 
     setupPhysics() {
@@ -54,11 +77,12 @@ class Platformer extends Phaser.Scene {
         } 
         
         else {
-            this.score = 0;
+            this.score = my.savedScore;
         }
 
         my.scoreCarryOver = false;  // reset the flag
         my.score = this.score;
+
         
         this.scoreText = this.add.text(game.config.width / 5.2, game.config.height / 5.5, `${this.score}`, {
             fontSize: '128px', fill: '#ffffff'
@@ -142,6 +166,8 @@ class Platformer extends Phaser.Scene {
 
         // Flag overlap - calls overrideable method
         this.physics.add.overlap(my.sprite.player, this.flagGroup, () => {
+
+            my.savedScore = this.score; 
             this.onLevelComplete();
         });
 
@@ -195,7 +221,25 @@ class Platformer extends Phaser.Scene {
         this.cameras.main.setZoom(this.SCALE);
     }
 
+
+    // resize(gameSize) {
+
+    //     const width = gameSize.width;
+    //     const height = gameSize.height;
+
+    //     this.clouds.setSize(width, height * 0.8);
+
+    //     this.clouds.setPosition(
+    //         0,
+    //         -height * 0.6
+    //     );
+    // }
+
     update() {
+
+
+        this.clouds.tilePositionX   = this.cameras.main.scrollX * 0.1;
+
         if (my.settings.fps && this.fpsText) {
             this.fpsText.setText(`FPS: ${Math.floor(this.game.loop.actualFps)}`);
         }
@@ -241,8 +285,10 @@ class Platformer extends Phaser.Scene {
         }
 
         if (Phaser.Input.Keyboard.JustDown(this.rKey)) {
-            this.score = 0;
+            
+            my.score = this.savedScore;
             this.scene.restart();
+
         }
     }
 }

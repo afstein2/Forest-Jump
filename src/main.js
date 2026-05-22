@@ -26,17 +26,28 @@ let config = {
         }
     },
 
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 1920, // (Default: 1920, 944), (1420, 944), (1280, 944)
+    height: 944,
     scale: {
-        mode: Phaser.Scale.RESIZE,
+        mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    scene: [StartScreen, Load, Platformer, Level1, Level2, PauseMenu, Settings]
+    scene: [StartScreen, Load, Platformer, Level1, Level2, WinScene, PauseMenu, Settings]
 }
 
-var cursors;
-const SCALE = 2.0;
-var my = {sprite: {}, text: {}, vfx: {}, settings: {fps: false}};
-
 const game = new Phaser.Game(config);
+
+// globals
+const centerX = game.config.width / 2;
+const centerY = game.config.height / 2;
+const W = game.config.width;
+const H = game.config.height;
+
+var cursors;
+var my = {
+    sprite: {},
+    text: {},
+    vfx: {},
+    settings: { fps: false }, 
+    savedScore: 0 
+};

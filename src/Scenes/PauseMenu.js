@@ -4,8 +4,6 @@ class PauseMenu extends Phaser.Scene {
     }
 
     create() {
-        const centerX = game.config.width / 2;
-        const centerY = game.config.height / 2;
 
         // Dim overlay
         this.add.rectangle(
@@ -15,8 +13,8 @@ class PauseMenu extends Phaser.Scene {
         );
 
 
-        // Restart Button
-        this.createButton(centerX, centerY, 'Restart', () => {
+        // Restart Level Button
+        this.createButton(centerX, centerY, 'Restart Level', () => {
             this.scene.stop();
             this.scene.start('platformerScene');
         });

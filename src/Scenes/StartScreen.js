@@ -4,8 +4,6 @@ class StartScreen extends Phaser.Scene {
     }
 
     create() {
-        const centerX = game.config.width / 2;
-        const centerY = game.config.height / 2;
 
         this.cameras.main.setBackgroundColor('#73bde2');
 
