@@ -1,3 +1,16 @@
+/**
+ * Allie Stein
+ * 
+ * Platformer implementation - Game 3b 
+ * 
+ * Forest Jump
+ * 
+ * 
+ */
+
+
+
+
 class Platformer extends Phaser.Scene {
 
     init() {

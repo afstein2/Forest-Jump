@@ -5,10 +5,30 @@ class WinScene extends Phaser.Scene {
     }
 
     create() {
-        // show final score
-        // play again button 
 
-        // resets my.savedScore = 0 and goes to startScene
-        
+        const titleText = this.add.text(centerX, centerY, 'You Finished!', {
+            fontSize: '32px',
+            fill: '#ffffff',
+            backgroundColor: '#000000',
+            padding: { x: 10, y: 5 }
+        })
+        .setOrigin(0.5);
+
+        const playAgainButton = this.add.text(centerX, centerY + 100, 'Play Again', {
+            fontSize: '32px',
+            fill: '#00ffcc',
+            backgroundColor: '#000000',
+            padding: { x: 10, y: 5 }
+        })
+        .setOrigin(0.5)
+        .setInteractive({ useHandCursor: true })
+        .on('pointerdown', () => {
+
+            my.score = 0;
+            my.savedScore = 0;
+
+            this.scene.start('startScene');
+        });
+
     }
 }
