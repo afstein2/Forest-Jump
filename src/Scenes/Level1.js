@@ -17,6 +17,10 @@ class Level1 extends Platformer {
 
 
         this.playerStart = { x: game.config.width / 4, y: 930 };
+
+        // Load Background Image Layer
+        //this.add.image(centerX + 656, centerY, 'background').setDepth(-1).setScale(1.5);
+        //this.backgroundLayer.setScale(this.SCALE);
     }
 
     onLevelComplete() {

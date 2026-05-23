@@ -31,7 +31,7 @@ class Platformer extends Phaser.Scene {
         )
         .setOrigin(0,0)//.setOrigin(-0.4, 0.4)
         .setScrollFactor(0)
-        //.setScale(0.9)//.setScale(1)//.setScale(0.6);
+        .setScale(1)//.setScale(0.9)//.setScale(1)//.setScale(0.6);
 
         this.clouds.tileScaleX = 0.4; //0.4
         this.clouds.tileScaleY = 0.4;
@@ -45,6 +45,7 @@ class Platformer extends Phaser.Scene {
         this.setupPlayer();
         this.setupInput();
         this.setupVFX();
+        this.setupAudio();
         this.setupCamera();
         
     }
@@ -208,6 +209,39 @@ class Platformer extends Phaser.Scene {
             alpha: { start: 1, end: 0.1 },
         });
         my.vfx.walking.stop();
+
+
+    }
+
+    setupAudio() {
+
+        // Jump sound
+        this.sound.add('jump');
+
+        this.walkSounds = [
+            this.sound.add('walk1', { volume: 0.4 }),
+            this.sound.add('walk2', { volume: 0.4 }),
+            this.sound.add('walk3', { volume: 0.4 }),
+            this.sound.add('walk4', { volume: 0.4 })
+        ];
+
+        this.lastStepTime = 0;
+        this.stepDelay = 250; // milliseconds
+
+
+    }
+
+
+    playFootstep() {
+
+        const sound =
+            Phaser.Utils.Array.GetRandom(this.walkSounds);
+
+        sound.play();
+    }
+
+    playJump() {
+        this.sound.play('jump');
     }
 
 
@@ -221,19 +255,6 @@ class Platformer extends Phaser.Scene {
         this.cameras.main.setZoom(this.SCALE);
     }
 
-
-    // resize(gameSize) {
-
-    //     const width = gameSize.width;
-    //     const height = gameSize.height;
-
-    //     this.clouds.setSize(width, height * 0.8);
-
-    //     this.clouds.setPosition(
-    //         0,
-    //         -height * 0.6
-    //     );
-    // }
 
     update() {
 
@@ -258,31 +279,64 @@ class Platformer extends Phaser.Scene {
             my.sprite.player.anims.play('walk', true);
             my.vfx.walking.startFollow(my.sprite.player, my.sprite.player.displayWidth / 2 - 10, my.sprite.player.displayHeight / 2 - 5, false);
             my.vfx.walking.setParticleSpeed(this.PARTICLE_VELOCITY, 0);
-            if (my.sprite.player.body.blocked.down) my.vfx.walking.start();
 
-        } else if (this.dKey.isDown || cursors.right.isDown) {
+            if (my.sprite.player.body.blocked.down) {
+                my.vfx.walking.start();
+
+                // FOOTSTEP TIMER
+                if (this.time.now > this.lastStepTime + this.stepDelay) {
+
+                    this.playFootstep();
+                    this.lastStepTime = this.time.now;
+                }
+            }
+
+
+        } 
+        
+        else if (this.dKey.isDown || cursors.right.isDown) {
             my.sprite.player.setAccelerationX(this.ACCELERATION);
             my.sprite.player.setFlip(true, false);
             my.sprite.player.anims.play('walk', true);
             my.vfx.walking.startFollow(my.sprite.player, my.sprite.player.displayWidth / 2 - 10, my.sprite.player.displayHeight / 2 - 5, false);
             my.vfx.walking.setParticleSpeed(this.PARTICLE_VELOCITY, 0);
-            if (my.sprite.player.body.blocked.down) my.vfx.walking.start();
 
-        } else {
+            if (my.sprite.player.body.blocked.down) {
+                my.vfx.walking.start();
+
+                // FOOTSTEP TIMER
+                if (this.time.now > this.lastStepTime + this.stepDelay) {
+
+                    this.playFootstep();
+                    this.lastStepTime = this.time.now;
+                }
+            }
+
+        } 
+        
+        else {
             my.sprite.player.setAccelerationX(0);
             my.sprite.player.setDragX(this.DRAG);
             my.sprite.player.anims.play('idle');
+
             my.vfx.walking.stop();
+
         }
 
         if (!my.sprite.player.body.blocked.down) {
             my.sprite.player.anims.play('jump');
+            
         }
 
         if (my.sprite.player.body.blocked.down &&
             (Phaser.Input.Keyboard.JustDown(cursors.space) || Phaser.Input.Keyboard.JustDown(cursors.up))) {
             my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
+
+                // PLAY JUMP SOUND
+                this.playJump();
         }
+
+    
 
         if (Phaser.Input.Keyboard.JustDown(this.rKey)) {
             

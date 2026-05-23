@@ -1,8 +1,7 @@
 {
-    "activeFile": "platformer-level-1.tmj",
+    "activeFile": "/home/deck/repos/CMPM120/Mappy/assets/tilemap02.tmx",
     "expandedProjectPaths": [
-        ".",
-        "kenney_foliage-pack"
+        "."
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
@@ -52,6 +51,9 @@
             "scaleInDock": 1
         },
         "/home/deck/repos/CMPM120/Mappy/assets/tilemap02.tmx": {
+            "expandedObjectLayers": [
+                4
+            ],
             "scale": 2,
             "selectedLayer": 3,
             "viewCenter": {
@@ -74,11 +76,14 @@
             "scaleInDock": 1
         },
         "platformer-level-1.tmj": {
-            "scale": 1.5,
+            "expandedObjectLayers": [
+                10
+            ],
+            "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 549.6666666666666,
-                "y": 566.3333333333333
+                "x": 881,
+                "y": 667
             }
         },
         "platformer-level-1.tmj#foliagePack_vector": {
@@ -95,12 +100,17 @@
     "map.tileWidth": 64,
     "map.width": 120,
     "openFiles": [
-        "platformer-level-1.tmj"
+        "platformer-level-1.tmj",
+        "/home/deck/repos/CMPM120/Mappy/assets/tilemap01.tmx",
+        "/home/deck/repos/CMPM120/Mappy/assets/tilemap02.tmx"
     ],
     "project": "starter-platformer.tiled-project",
     "property.type": "file",
     "recentFiles": [
         "platformer-level-1.tmj",
+        "/home/deck/repos/CMPM120/Mappy/assets/tilemap01.tmx",
+        "/home/deck/repos/CMPM120/Mappy/assets/tilemap02.tmx",
+        "/home/deck/repos/CMPM120/Mappy/assets/tilemap04.tmx",
         "/home/deck/repos/CMPM120/Forest-Jump/tiled-bak/Treesbackground.tmj",
         "/home/deck/repos/CMPM120/Forest-Jump/tiled-bak/ForestJump.tmj"
     ],

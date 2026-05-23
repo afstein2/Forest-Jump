@@ -19,6 +19,20 @@ class Load extends Phaser.Scene {
         this.load.image('clouds', 'clouds_small.png');
 
 
+        this.load.image('background', 'm_small2.png');
+
+
+        // Load audio
+        this.load.audio("jump", "Audio/Jump1.mp3");
+        this.load.audio("coin", "coin.wav");
+        this.load.audio("death", "death.wav");
+
+        this.load.audio("walk1", "Audio/footstep_grass_000.ogg");
+        this.load.audio("walk2", "Audio/footstep_grass_001.ogg");
+        this.load.audio("walk3", "Audio/footstep_grass_002.ogg");
+        this.load.audio("walk4", "Audio/footstep_grass_003.ogg");
+
+
         // Load the tilemap as a spritesheet
         this.load.spritesheet("tilemap_sheet", "tilemap_packed.png", {
             frameWidth: 18,
