@@ -19,8 +19,13 @@ class StartScreen extends Phaser.Scene {
             this.scene.start('loadScene');
         });
 
+        // Controls Button
+        this.createButton(centerX, centerY + 80, 'Controls', () => {
+            this.scene.start('controlsScene');
+        });
+
         // Settings Button
-        this.createButton(centerX, centerY + 80, 'Settings', () => {
+        this.createButton(centerX, centerY + 160, 'Settings', () => {
             this.scene.start('settingsScene');
         });
     }

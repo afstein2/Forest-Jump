@@ -1,10 +1,10 @@
 
 
 Audio:
-Kenny
+Death and walking sound - Kennyenn
 
-Zapsplat (jump and collect coin sounds)
+jump, collect coin, and water sounds - Zapsplat 
 https://www.zapsplat.com/page/2/?s=jump+sound&registration_redirect=1&item_id=152236#038;registration_redirect=1&item_id=152236
 
-Textures:
+Textures and particles:
 Kenny
