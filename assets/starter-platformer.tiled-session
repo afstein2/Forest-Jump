@@ -43,7 +43,7 @@
             "scale": 1.1993749999999999,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 359.7707139134967,
+                "x": 360.18759770713916,
                 "y": 239.70818134445025
             }
         },
@@ -58,7 +58,7 @@
             "selectedLayer": 3,
             "viewCenter": {
                 "x": 234.25,
-                "y": 239.75
+                "y": 241.75
             }
         },
         "/home/deck/repos/CMPM120/Mappy/assets/tilemap02.tmx#colored_packed": {
@@ -82,8 +82,8 @@
             "scale": 0.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 881,
-                "y": 667
+                "x": 867,
+                "y": 591
             }
         },
         "platformer-level-1.tmj#foliagePack_vector": {
@@ -107,9 +107,9 @@
     "project": "starter-platformer.tiled-project",
     "property.type": "file",
     "recentFiles": [
-        "platformer-level-1.tmj",
-        "/home/deck/repos/CMPM120/Mappy/assets/tilemap01.tmx",
         "/home/deck/repos/CMPM120/Mappy/assets/tilemap02.tmx",
+        "/home/deck/repos/CMPM120/Mappy/assets/tilemap01.tmx",
+        "platformer-level-1.tmj",
         "/home/deck/repos/CMPM120/Mappy/assets/tilemap04.tmx",
         "/home/deck/repos/CMPM120/Forest-Jump/tiled-bak/Treesbackground.tmj",
         "/home/deck/repos/CMPM120/Forest-Jump/tiled-bak/ForestJump.tmj"

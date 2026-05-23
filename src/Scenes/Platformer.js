@@ -6,7 +6,8 @@ class Platformer extends Phaser.Scene {
         this.ACCELERATION = 400;
         this.DRAG = 500;    // DRAG < ACCELERATION = icy slide
         this.physics.world.gravity.y = 1500;
-        this.JUMP_VELOCITY = -600;
+        this.JUMP_VELOCITY = -700;
+        this.inWater = false;
 
         // particles
         this.PARTICLE_VELOCITY = 50;
@@ -140,7 +141,29 @@ class Platformer extends Phaser.Scene {
         });
         this.physics.world.enable(this.spikes, Phaser.Physics.Arcade.STATIC_BODY);
         this.spikeGroup = this.add.group(this.spikes);
+
+
+        // Moving Platforms
+
+
+        // Water Zone
+        this.waterZone = this.add.zone(
+            2150,   // x
+            1000,    // y
+            380,    // width
+            120     // height
+        );
+
+        this.waterZone = this.add.zone(2150, 1000, 380, 120);
+
+        this.physics.world.enable(this.waterZone);
+
+        // IMPORTANT: treat it like an immovable physics body
+        this.waterZone.body.setAllowGravity(false);
+        this.waterZone.body.setImmovable(true);
+        this.waterZone.body.moves = false;
     }
+
 
 
     // PLAYER  ---------------------------------------------------------
@@ -163,6 +186,10 @@ class Platformer extends Phaser.Scene {
             my.score = this.score;
             this.scoreText.setText(`${this.score}`);
             obj2.destroy();
+
+            // PLAY COIN SOUND
+            //this.sound.play('coin');
+            this.playCoin();
         });
 
         // Flag overlap - calls overrideable method
@@ -175,8 +202,17 @@ class Platformer extends Phaser.Scene {
         // Spike overlap
         this.physics.add.overlap(my.sprite.player, this.spikeGroup, () => {
             this.scene.restart();
+            my.score = this.savedScore;
+
+            // PLAY DEATH SOUND
+            //this.sound.play('death');
+            this.playDeath();
         });
+        
     }
+
+
+    
 
     // Subclasses override this
     onLevelComplete() {}
@@ -196,9 +232,11 @@ class Platformer extends Phaser.Scene {
         }, this);
     }
 
-     // VFX ---------------------------------------------------------   
+     // VFX/Particles ---------------------------------------------------------   
 
     setupVFX() {
+
+        // Walking dust particles
         my.vfx.walking = this.add.particles(0, 0, "kenny-particles", {
             frame: ['smoke_03.png', 'smoke_09.png'],
             random: true,
@@ -210,7 +248,31 @@ class Platformer extends Phaser.Scene {
         });
         my.vfx.walking.stop();
 
+        // Water bubble particles
+        my.vfx.water = this.add.particles(0, 0, "kenny-particles", {
 
+            frame: "bubble_01.png",
+
+            x: { min: 2000, max: 2200 },
+            y: { min: 1200, max: 900 },
+
+            lifespan: 1200,
+
+            speedY: { min: -80, max: -40 },
+            speedX: { min: -10, max: 10 },
+
+            scale: { start: 0.08, end: 0 },
+
+            alpha: { start: 0.8, end: 0 },
+
+            quantity: 1,
+
+            frequency: 120,
+
+            blendMode: 'ADD',
+
+            emitting: false
+        });
     }
 
     setupAudio() {
@@ -218,11 +280,27 @@ class Platformer extends Phaser.Scene {
         // Jump sound
         this.sound.add('jump');
 
+        // Coin Collect sound
+        this.sound.add('coin');
+
+        // Death sound
+        this.sound.add('death');
+
+        // Footstep sounds
         this.walkSounds = [
             this.sound.add('walk1', { volume: 0.4 }),
             this.sound.add('walk2', { volume: 0.4 }),
             this.sound.add('walk3', { volume: 0.4 }),
             this.sound.add('walk4', { volume: 0.4 })
+        ];
+
+
+        // Water sounds
+        this.waterSounds = [
+            this.sound.add('water1', { volume: 0.4 }),
+            this.sound.add('water2', { volume: 0.4 }),
+            this.sound.add('water3', { volume: 0.4 }),
+            this.sound.add('water4', { volume: 0.4 })
         ];
 
         this.lastStepTime = 0;
@@ -244,6 +322,23 @@ class Platformer extends Phaser.Scene {
         this.sound.play('jump');
     }
 
+    playCoin() {
+        this.sound.play('coin');
+    }
+
+    playDeath() {
+        this.sound.play('death');
+    }
+
+    playWater() {
+        const sound =
+            Phaser.Utils.Array.GetRandom(this.waterSounds);
+
+        sound.play();
+    }
+
+
+
 
     // CAMERA ---------------------------------------------------------
 
@@ -254,9 +349,40 @@ class Platformer extends Phaser.Scene {
         this.cameras.main.setDeadzone(50, 50);
         this.cameras.main.setZoom(this.SCALE);
     }
+    
 
 
     update() {
+
+        const touchingWater = this.physics.overlap(my.sprite.player, this.waterZone);
+
+
+        if (!this.physics.overlap(my.sprite.player, this.waterZone)) {
+            my.vfx.water.stop();
+        }
+
+
+        // ENTER WATER
+        if (touchingWater && !this.inWater) {
+
+            this.inWater = true;
+
+            this.playWater();
+
+            my.vfx.water.start();
+
+            this.physics.world.gravity.y = 400;
+        }
+
+        // EXIT WATER
+        else if (!touchingWater && this.inWater) {
+
+            this.inWater = false;
+
+            my.vfx.water.stop();
+
+            this.physics.world.gravity.y = 1500;
+        } 
 
 
         this.clouds.tilePositionX   = this.cameras.main.scrollX * 0.1;

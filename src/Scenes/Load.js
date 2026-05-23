@@ -24,13 +24,18 @@ class Load extends Phaser.Scene {
 
         // Load audio
         this.load.audio("jump", "Audio/Jump1.mp3");
-        this.load.audio("coin", "coin.wav");
-        this.load.audio("death", "death.wav");
+        this.load.audio("coin", "Audio/Coin.mp3");
+        this.load.audio("death", "Audio/impactPunch_medium_002.ogg");
 
         this.load.audio("walk1", "Audio/footstep_grass_000.ogg");
         this.load.audio("walk2", "Audio/footstep_grass_001.ogg");
         this.load.audio("walk3", "Audio/footstep_grass_002.ogg");
         this.load.audio("walk4", "Audio/footstep_grass_003.ogg");
+
+        this.load.audio("water1", "Audio/water_splosh_movement_higher_pitched_008.mp3");
+        this.load.audio("water2", "Audio/water_splosh_movement_higher_pitched_009.mp3");
+        this.load.audio("water3", "Audio/water_splosh_movement_lower_pitched_002.mp3");
+        this.load.audio("water4", "Audio/water_splosh_movement_lower_pitched_003.mp3");
 
 
         // Load the tilemap as a spritesheet
