@@ -50,6 +50,7 @@ class Platformer extends Phaser.Scene {
         this.clouds.tileScaleX = 0.4; //0.4
         this.clouds.tileScaleY = 0.4;
 
+        // Print Window Size
         console.log("Scale width:", this.scale.width, "Scale height:", this.scale.height);
         console.log("Game size width:", this.scale.gameSize.width, "Game size height:", this.scale.gameSize.height);
         console.log("Camera width:", this.cameras.main.width, "Camera height:", this.cameras.main.height);

@@ -10,16 +10,13 @@ class Load extends Phaser.Scene {
         this.load.atlas("platformer_characters", "tilemap-characters-packed.png", "tilemap-characters-packed.json");
 
         // Load tilemap information
-        this.load.image("tilemap_tiles", "tilemap_packed.png");                         // Packed tilemap
+        this.load.image("tilemap_tiles", "tilemap_packed.png");                       // Packed tilemap
         this.load.image("bgmap_tiles", "foliagePack_vector.svg");
-        this.load.tilemapTiledJSON("platformer-level-1", "platformer-level-1.tmj");   // Tilemap in JSON
-        this.load.tilemapTiledJSON("platformer-level-2", "platformer-level-2.tmj");   // Tilemap in JSON
-        this.load.image("coin_icon", "Coin.png");
+        this.load.tilemapTiledJSON("platformer-level-1", "platformer-level-1.tmj");   // Lvl 1 Tilemap in JSON
+        this.load.tilemapTiledJSON("platformer-level-2", "platformer-level-2.tmj");   // Lvl 2 Tilemap in JSON
+        this.load.image("coin_icon", "Textures/Coin.png");
 
-        this.load.image('clouds', 'clouds_small.png');
-
-
-        this.load.image('background', 'm_small2.png');
+        this.load.image('clouds', 'Textures/clouds_small.png');
 
 
         // Load audio

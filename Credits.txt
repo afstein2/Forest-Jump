@@ -7,4 +7,7 @@ jump, collect coin, and water sounds - Zapsplat
 https://www.zapsplat.com/page/2/?s=jump+sound&registration_redirect=1&item_id=152236#038;registration_redirect=1&item_id=152236
 
 Textures and particles:
-Kenny
+kenney_impact-sounds (Kenny Assets)
+kenney_pixel-platformer (Kenny Assets)
+kenney_platformer-art-pixel (Kenny Assets)
+Clouds (Allie Stein)

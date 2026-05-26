@@ -11,14 +11,12 @@ class Level2 extends Platformer {
 
         this.groundLayer = this.map.createLayer("Ground-n-Platforms", this.tileset, 0, 0);
         
-        
+        console.log(this.map.getObjectLayer("Objects"));
         this.groundLayer.setCollisionByProperty({ collides: true });
         this.groundLayer.setScale(this.SCALE);
 
         this.playerStart = { x: game.config.width / 4, y: 930 };
 
-
-        // TypeError: can't access property "setCollisionByProperty", this.groundLayer is null
     }
 
     onLevelComplete() {
