@@ -17,104 +17,20 @@ class Level1 extends Platformer {
 
     }
 
-    // OVERRIDE
-    setupObjects(){
 
-        // Run Platformer setupObjects first
+    setupObjects() {
         super.setupObjects();
-
-
-       /* ==================================================
-        * Water Objects
-        * ================================================= */
-
-        // Water Barrier ----------------------------------------
-        // Prevents player from falling through water
-        this.barrier = this.add.zone(
-            2150,   // x
-            1080,    // y
-            380,    // width
-            10     // height
-        );
-
-        this.physics.world.enable(this.barrier);
-
-        this.barrier.body.setAllowGravity(false);
-        this.barrier.body.setImmovable(true);
-        this.barrier.body.moves = false;
-
-
-        // Water Zone ----------------------------------------
-        this.waterZone = this.add.zone(
-            2150,   // x
-            1000,    // y
-            380,    // width
-            120     // height
-        );
-
-        this.waterZone = this.add.zone(2150, 1000, 380, 120);
-
-        this.physics.world.enable(this.waterZone);
-
-
-        this.waterZone.body.setAllowGravity(false);
-        this.waterZone.body.setImmovable(true);
-        this.waterZone.body.moves = false;
+        this.setupWaterZones([
+            { x: 2150, barrierY: 1080, zoneY: 1000, width: 380, height: 120 }
+        ]);
     }
 
-    // setupPlayer() {
-
-    // }
-
-
-    // OVERRIDE
     setupVFX() {
-
-        // Run parent particles first
         super.setupVFX();
-
-        // Remove default water emitter
         my.vfx.water.destroy();
-
-
-        /* ==================================================
-        * Water Bubbles
-        * ================================================= */
-
-        my.vfx.water = [];
-
-
-
-        // Water Area 1 --------------------------------------
-
-        const bubbles1 = this.add.particles(0, 0, "kenny-particles", {
-
-            frame: "bubble_01.png",
-
-            x: { min: 2000, max: 2300 },
-            y: { min: 1200, max: 900 },
-
-            lifespan: 1200,
-
-            speedY: { min: -80, max: -40 },
-            speedX: { min: -10, max: 10 },
-
-            scale: { start: 0.08, end: 0 },
-
-            alpha: { start: 0.8, end: 0 },
-
-            quantity: 1,
-            frequency: 120,
-
-            blendMode: 'ADD',
-
-            emitting: false
-        });
-
-
-        // Store emitters
-        my.vfx.water.push(bubbles1);
+        my.vfx.water = [this.createBubbleEmitter(2000, 2300)];
     }
+
     
 
     onLevelComplete() {

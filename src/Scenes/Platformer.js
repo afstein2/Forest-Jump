@@ -7,8 +7,6 @@
  * 
  */
 
-
-
 class Platformer extends Phaser.Scene {
 
     init() {
@@ -30,8 +28,7 @@ class Platformer extends Phaser.Scene {
     create() {
         this.setupPhysics();
         this.setupUI();
-        this.setupMap();      // calls overrideable method
-
+        this.setupMap();
 
         this.clouds = this.add.tileSprite(
             0,
@@ -40,42 +37,33 @@ class Platformer extends Phaser.Scene {
             this.scale.height * 0.89,
             'clouds'
         )
-        .setOrigin(0,0)//.setOrigin(-0.4, 0.4)
+        .setOrigin(0, 0)
         .setScrollFactor(0)
-        .setScale(1)//.setScale(0.9)//.setScale(1)//.setScale(0.6);
+        .setScale(1);
 
-        this.clouds.tileScaleX = 0.4; //0.4
+        this.clouds.tileScaleX = 0.4;
         this.clouds.tileScaleY = 0.4;
 
-        // Print Window Size
+        // Print Screen Size
         console.log("Scale width:", this.scale.width, "Scale height:", this.scale.height);
         console.log("Game size width:", this.scale.gameSize.width, "Game size height:", this.scale.gameSize.height);
         console.log("Camera width:", this.cameras.main.width, "Camera height:", this.cameras.main.height);
         console.log("Window width:", window.innerWidth, "Window height:", window.innerHeight);
 
         this.setupObjects();
-        this.setupPlayer();
+        this.setupPlayer();   // player created here, AFTER setupObjects
         this.setupInput();
         this.setupVFX();
         this.setupAudio();
         this.setupCamera();
-        
     }
 
     setupPhysics() {
 
-        /*
-        * Fix Collison clipping 
-        * 
-        * https://thoughts.amphibian.com/2016/02/dont-fall-through-tile-bias-in-phaser.html
-        * 
-        * ArcadeWorldConfig
-        * https://docs.phaser.io/api-documentation/typedef/types-physics-arcade
-        * 
-        */ 
-        
+        // Fix Collison clipping
         this.physics.world.TILE_BIAS = 32;
     }
+
 
     // Subclasses override this to load their own map
     setupMap() {}
@@ -84,19 +72,25 @@ class Platformer extends Phaser.Scene {
     // UI  -----------------------------------------------
 
     setupUI() {
+
         
+        /* ==================================================
+        * Coin Score
+        * ================================================= */
         if (my.score) {
             this.score = my.score;
-        } 
-        
-        else {
+        } else {
             this.score = my.savedScore;
         }
 
-        my.scoreCarryOver = false;  // reset the flag
+        my.scoreCarryOver = false;
         my.score = this.score;
 
+
         
+        /* ==================================================
+        * UI Text
+        * ================================================= */
         this.scoreText = this.add.text(game.config.width / 5.2, game.config.height / 5.5, `${this.score}`, {
             fontSize: '128px', fill: '#ffffff'
         }).setScrollFactor(0).setDepth(100).setScale(0.5);
@@ -104,8 +98,6 @@ class Platformer extends Phaser.Scene {
         this.coinIcon = this.add.image(game.config.width / 5.5, game.config.height / 4.7, "coin_icon");
         this.coinIcon.setScrollFactor(0).setScale(3).setDepth(1000);
 
-
-        // Create FPS Text
         if (my.settings.fps) {
             this.fpsText = this.add.text(game.config.width / 1.3, game.config.height / 5.5, '', {
                 fontSize: '48px',
@@ -114,13 +106,19 @@ class Platformer extends Phaser.Scene {
         }
     }
 
+
     // OBJECTS  -----------------------------------------------
 
     setupObjects() {
 
+        // Defaults - subclasses populate via setupWaterZones()
+        this.waterZone = null;
+        this.waterBarriers = [];
+
+
 
         /* ==================================================
-        * Collidable Objects
+        * Create Objects
         * ================================================= */
 
         // Coins ------------------------------------------------
@@ -147,7 +145,7 @@ class Platformer extends Phaser.Scene {
         this.physics.world.enable(this.flags, Phaser.Physics.Arcade.STATIC_BODY);
         this.flagGroup = this.add.group(this.flags);
 
-         // Spikes ------------------------------------------------
+        // Spikes ------------------------------------------------
         this.spikes = this.map.createFromObjects("Objects", {
             name: "spike", key: "tilemap_sheet", frame: 68
         });
@@ -158,24 +156,80 @@ class Platformer extends Phaser.Scene {
         });
         this.physics.world.enable(this.spikes, Phaser.Physics.Arcade.STATIC_BODY);
         this.spikeGroup = this.add.group(this.spikes);
-
     }
 
+
+
+    /* ==================================================
+    * Create Water Zones
+    * ================================================= */
+    // Called by subclasses inside their setupObjects()
+    // Barriers are stored and wired to the player later in setupPlayer()
+    setupWaterZones(configs) {
+
+        const zoneObjects = configs.map(cfg => {
+
+            const barrier = this.add.zone(cfg.x, cfg.barrierY, cfg.width, 10);
+            this.physics.world.enable(barrier);
+            barrier.body.setAllowGravity(false);
+            barrier.body.setImmovable(true);
+            barrier.body.moves = false;
+            this.waterBarriers.push(barrier); // collider added later in setupPlayer
+
+            const zone = this.add.zone(cfg.x, cfg.zoneY, cfg.width, cfg.height);
+            this.physics.world.enable(zone);
+            zone.body.setAllowGravity(false);
+            zone.body.setImmovable(true);
+            zone.body.moves = false;
+
+            return zone;
+        });
+
+        if (zoneObjects.length === 1) {
+            this.waterZone = zoneObjects[0];
+        } 
+        
+        else {
+            this.waterZone = this.add.group(zoneObjects);
+        }
+    }
 
 
     // PLAYER  ---------------------------------------------------------
 
     setupPlayer() {
+
+        /* ==================================================
+        * Create Player
+        * ================================================= */
         my.sprite.player = this.physics.add.sprite(
             this.playerStart.x,
             this.playerStart.y,
             "platformer_characters",
             "tile_0000.png"
         );
-        my.sprite.player.setScale(this.SCALE);
-        my.sprite.player.setCollideWorldBounds(false);
+        my.sprite.player.setScale(this.SCALE);         // Player Scale
+        my.sprite.player.setCollideWorldBounds(false); // Player World bounds
 
+
+
+        /* ==================================================
+        * Fixed Colliders/Barriers
+        * ================================================= */
+
+        // Ground Collison 
         this.physics.add.collider(my.sprite.player, this.groundLayer);
+
+        // Water barrier colliders - now safe because player exists
+        this.waterBarriers.forEach(barrier => {
+            this.physics.add.collider(my.sprite.player, barrier);
+        });
+
+
+
+        /* ==================================================
+        * Collidable Objects
+        * ================================================= */
 
         // Coin overlap
         this.physics.add.overlap(my.sprite.player, this.coinGroup, (obj1, obj2) => {
@@ -183,16 +237,12 @@ class Platformer extends Phaser.Scene {
             my.score = this.score;
             this.scoreText.setText(`${this.score}`);
             obj2.destroy();
-
-            // Play coin sound
-            //this.sound.play('coin');
             this.playCoin();
         });
 
-        // Flag overlap - calls overrideable method
+        // Flag overlap
         this.physics.add.overlap(my.sprite.player, this.flagGroup, () => {
-
-            my.savedScore = this.score; 
+            my.savedScore = this.score;
             this.onLevelComplete();
         });
 
@@ -200,21 +250,16 @@ class Platformer extends Phaser.Scene {
         this.physics.add.overlap(my.sprite.player, this.spikeGroup, () => {
             this.scene.restart();
             my.score = this.savedScore;
-
-            // Play death sound
             this.playDeath();
         });
 
 
-
-        // Water barrier overlap
-        this.physics.add.collider(my.sprite.player, this.barrier);
-        
     }
-    
+
 
     // OVERRIDE
     onLevelComplete() {}
+
 
     // INPUT ---------------------------------------------------------
 
@@ -231,11 +276,14 @@ class Platformer extends Phaser.Scene {
         }, this);
     }
 
-     // VFX/Particles ---------------------------------------------------------   
+
+    // VFX/Particles ---------------------------------------------------------
 
     setupVFX() {
 
-        // Walking dust particles
+    /* ==================================================
+    * Create Walking Particles 
+    * ================================================= */
         my.vfx.walking = this.add.particles(0, 0, "kenny-particles", {
             frame: ['smoke_03.png', 'smoke_09.png'],
             random: true,
@@ -247,56 +295,69 @@ class Platformer extends Phaser.Scene {
         });
         my.vfx.walking.stop();
 
-        /* ==================================================
-        * Water Bubbles (Level 1 Overrides)
-        * ================================================= */
-        my.vfx.water = this.add.particles(0, 0, "kenny-particles", {
 
+    /* ==================================================
+    * Create Bubble Particles (Overrides)
+    * ================================================= */
+        // Placeholder water emitter - subclasses destroy and replace this
+        my.vfx.water = this.add.particles(0, 0, "kenny-particles", {
             frame: "bubble_01.png",
         });
     }
 
-    // Water VFX
+    /* ==================================================
+    * Create Bubble Particles
+    * ================================================= */
+    createBubbleEmitter(xMin, xMax) {
+        return this.add.particles(0, 0, "kenny-particles", {
+            frame: "bubble_01.png",
+            x: { min: xMin, max: xMax },
+            y: { min: 1200, max: 900 },
+            lifespan: 1200,
+            speedY: { min: -80, max: -40 },
+            speedX: { min: -10, max: 10 },
+            scale: { start: 0.08, end: 0 },
+            alpha: { start: 0.8, end: 0 },
+            quantity: 1,
+            frequency: 120,
+            blendMode: 'ADD',
+            emitting: false
+        });
+    }
+
+
+    /* ==================================================
+    *  Start/Stop Water VFX
+    * ================================================= */
     startWaterVFX() {
-
         if (Array.isArray(my.vfx.water)) {
-
             my.vfx.water.forEach(emitter => emitter.start());
-
         } else {
-
             my.vfx.water.start();
         }
     }
 
     stopWaterVFX() {
-
         if (Array.isArray(my.vfx.water)) {
-
             my.vfx.water.forEach(emitter => emitter.stop());
-
         } else {
-
             my.vfx.water.stop();
         }
     }
-    
 
 
     // AUDIO ---------------------------------------------------------
 
+
+    /* ==================================================
+    * Create Audio 
+    * ================================================= */
     setupAudio() {
 
-        // Jump sound
         this.sound.add('jump');
-
-        // Coin Collect sound
         this.sound.add('coin');
-
-        // Death sound
         this.sound.add('death');
 
-        // Footstep sounds
         this.walkSounds = [
             this.sound.add('walk1', { volume: 0.4 }),
             this.sound.add('walk2', { volume: 0.4 }),
@@ -304,8 +365,6 @@ class Platformer extends Phaser.Scene {
             this.sound.add('walk4', { volume: 0.4 })
         ];
 
-
-        // Water sounds
         this.waterSounds = [
             this.sound.add('water1', { volume: 0.4 }),
             this.sound.add('water2', { volume: 0.4 }),
@@ -314,18 +373,14 @@ class Platformer extends Phaser.Scene {
         ];
 
         this.lastStepTime = 0;
-        this.stepDelay = 250; // milliseconds
-
-
+        this.stepDelay = 250;
     }
 
-    // Play audio
+    /* ==================================================
+    * Play Audio 
+    * ================================================= */
     playFootstep() {
-
-        const sound =
-            Phaser.Utils.Array.GetRandom(this.walkSounds);
-
-        sound.play();
+        Phaser.Utils.Array.GetRandom(this.walkSounds).play();
     }
 
     playJump() {
@@ -341,17 +396,15 @@ class Platformer extends Phaser.Scene {
     }
 
     playWater() {
-        const sound =
-            Phaser.Utils.Array.GetRandom(this.waterSounds);
-
-        sound.play();
+        Phaser.Utils.Array.GetRandom(this.waterSounds).play();
     }
-
-
 
 
     // CAMERA ---------------------------------------------------------
 
+    /* ==================================================
+    * Create Camera
+    * ================================================= */
     setupCamera() {
         this.cameras.main.startFollow(my.sprite.player, true, 0.25, 0.25);
         this.cameras.main.setBounds(0, 0, this.map.widthInPixels * this.SCALE, this.map.heightInPixels * this.SCALE);
@@ -361,67 +414,57 @@ class Platformer extends Phaser.Scene {
     }
 
 
-
-
     update() {
 
 
 
-
-        // If out of bounds kill player
+        /* ==================================================
+        * World Bounds
+        * ================================================= */
+        // If out of bounds, kill player
         if (my.sprite.player.y > this.physics.world.bounds.height + 200) {
-
             my.score = this.savedScore;
-
             this.playDeath();
-
             this.scene.restart();
         }
 
 
-        // Touching Water
-        const touchingWater = this.physics.overlap(
-            my.sprite.player,
-            this.waterZone
-        );
+        /* ==================================================
+        * Water Updates
+        * ================================================= */
 
+        // Water check
+        let touchingWater = false;
 
-        if (!this.physics.overlap(my.sprite.player, this.waterZone)) {
-
-
-            // Disable Bubble Particles
-            this.stopWaterVFX();
-
+        if (this.waterZone) {
+            touchingWater = this.physics.overlap(my.sprite.player, this.waterZone);
         }
 
+        if (!touchingWater) {
+            this.stopWaterVFX();
+        }
 
-        // Enter Water
+        // Enter water
         if (touchingWater && !this.inWater) {
-
             this.inWater = true;
-
             this.playWater();
-
-
-            // Enable Bubble particles
             this.startWaterVFX();
-
             this.physics.world.gravity.y = 400;
         }
-
-        // Exit Water
+        // Exit water
         else if (!touchingWater && this.inWater) {
-
             this.inWater = false;
-
-            // Disable Bubble Particles
             this.stopWaterVFX();
-
             this.physics.world.gravity.y = 1500;
-        } 
+        }
 
 
-        this.clouds.tilePositionX   = this.cameras.main.scrollX * 0.1;
+
+
+        /* ==================================================
+        * UI/Cloud Updates
+        * ================================================= */
+        this.clouds.tilePositionX = this.cameras.main.scrollX * 0.1;
 
         if (my.settings.fps && this.fpsText) {
             this.fpsText.setText(`FPS: ${Math.floor(this.game.loop.actualFps)}`);
@@ -432,9 +475,9 @@ class Platformer extends Phaser.Scene {
             this.scene.launch('pauseScene');
         }
 
-
-        // Controls A,D, Space
-
+        /* ==================================================
+        * Player Movement Updates
+        * ================================================= */
         if (this.aKey.isDown || cursors.left.isDown) {
             my.sprite.player.setAccelerationX(-this.ACCELERATION);
             my.sprite.player.resetFlip();
@@ -444,19 +487,13 @@ class Platformer extends Phaser.Scene {
 
             if (my.sprite.player.body.blocked.down) {
                 my.vfx.walking.start();
-
-                // Footstep timer
                 if (this.time.now > this.lastStepTime + this.stepDelay) {
-
                     this.playFootstep();
                     this.lastStepTime = this.time.now;
                 }
             }
 
-
-        } 
-        
-        else if (this.dKey.isDown || cursors.right.isDown) {
+        } else if (this.dKey.isDown || cursors.right.isDown) {
             my.sprite.player.setAccelerationX(this.ACCELERATION);
             my.sprite.player.setFlip(true, false);
             my.sprite.player.anims.play('walk', true);
@@ -465,46 +502,33 @@ class Platformer extends Phaser.Scene {
 
             if (my.sprite.player.body.blocked.down) {
                 my.vfx.walking.start();
-
-                // Footstep timer
                 if (this.time.now > this.lastStepTime + this.stepDelay) {
-
                     this.playFootstep();
                     this.lastStepTime = this.time.now;
                 }
             }
 
-        } 
-        
-        else {
+        } else {
             my.sprite.player.setAccelerationX(0);
             my.sprite.player.setDragX(this.DRAG);
             my.sprite.player.anims.play('idle');
-
             my.vfx.walking.stop();
-
         }
 
         if (!my.sprite.player.body.blocked.down) {
             my.sprite.player.anims.play('jump');
-            
         }
 
         if (my.sprite.player.body.blocked.down &&
             (Phaser.Input.Keyboard.JustDown(cursors.space) || Phaser.Input.Keyboard.JustDown(cursors.up))) {
             my.sprite.player.body.setVelocityY(this.JUMP_VELOCITY);
-
-                // PLAY JUMP SOUND
-                this.playJump();
+            this.playJump();
         }
 
-    
-
+        // Restart Level
         if (Phaser.Input.Keyboard.JustDown(this.rKey)) {
-            
             my.score = this.savedScore;
             this.scene.restart();
-
         }
     }
 }
