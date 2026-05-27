@@ -5,9 +5,7 @@
  * 
  * Forest Jump
  * 
- * 
  */
-
 
 
 
@@ -34,7 +32,6 @@ class Platformer extends Phaser.Scene {
         this.setupUI();
         this.setupMap();      // calls overrideable method
 
-        //this.scale.on('fit', this.resize, this);
 
         this.clouds = this.add.tileSprite(
             0,
@@ -187,7 +184,7 @@ class Platformer extends Phaser.Scene {
             this.scoreText.setText(`${this.score}`);
             obj2.destroy();
 
-            // PLAY COIN SOUND
+            // Play coin sound
             //this.sound.play('coin');
             this.playCoin();
         });
@@ -204,8 +201,7 @@ class Platformer extends Phaser.Scene {
             this.scene.restart();
             my.score = this.savedScore;
 
-            // PLAY DEATH SOUND
-            //this.sound.play('death');
+            // Play death sound
             this.playDeath();
         });
 
@@ -215,11 +211,9 @@ class Platformer extends Phaser.Scene {
         this.physics.add.collider(my.sprite.player, this.barrier);
         
     }
-
-
     
 
-    // Subclasses override this
+    // OVERRIDE
     onLevelComplete() {}
 
     // INPUT ---------------------------------------------------------
@@ -253,12 +247,43 @@ class Platformer extends Phaser.Scene {
         });
         my.vfx.walking.stop();
 
-        // Water bubble particles
+        /* ==================================================
+        * Water Bubbles (Level 1 Overrides)
+        * ================================================= */
         my.vfx.water = this.add.particles(0, 0, "kenny-particles", {
 
             frame: "bubble_01.png",
         });
     }
+
+    // Water VFX
+    startWaterVFX() {
+
+        if (Array.isArray(my.vfx.water)) {
+
+            my.vfx.water.forEach(emitter => emitter.start());
+
+        } else {
+
+            my.vfx.water.start();
+        }
+    }
+
+    stopWaterVFX() {
+
+        if (Array.isArray(my.vfx.water)) {
+
+            my.vfx.water.forEach(emitter => emitter.stop());
+
+        } else {
+
+            my.vfx.water.stop();
+        }
+    }
+    
+
+
+    // AUDIO ---------------------------------------------------------
 
     setupAudio() {
 
@@ -294,7 +319,7 @@ class Platformer extends Phaser.Scene {
 
     }
 
-
+    // Play audio
     playFootstep() {
 
         const sound =
@@ -336,30 +361,6 @@ class Platformer extends Phaser.Scene {
     }
 
 
-    startWaterVFX() {
-
-        if (Array.isArray(my.vfx.water)) {
-
-            my.vfx.water.forEach(emitter => emitter.start());
-
-        } else {
-
-            my.vfx.water.start();
-        }
-    }
-
-    stopWaterVFX() {
-
-        if (Array.isArray(my.vfx.water)) {
-
-            my.vfx.water.forEach(emitter => emitter.stop());
-
-        } else {
-
-            my.vfx.water.stop();
-        }
-    }
-    
 
 
     update() {
@@ -415,14 +416,6 @@ class Platformer extends Phaser.Scene {
 
             // Disable Bubble Particles
             this.stopWaterVFX();
-            // if (Array.isArray(my.vfx.water)) {
-
-            //     my.vfx.water.forEach(emitter => emitter.stop());
-
-            // } else {
-
-            //     my.vfx.water.stop();
-            // }
 
             this.physics.world.gravity.y = 1500;
         } 
@@ -452,7 +445,7 @@ class Platformer extends Phaser.Scene {
             if (my.sprite.player.body.blocked.down) {
                 my.vfx.walking.start();
 
-                // FOOTSTEP TIMER
+                // Footstep timer
                 if (this.time.now > this.lastStepTime + this.stepDelay) {
 
                     this.playFootstep();
@@ -473,7 +466,7 @@ class Platformer extends Phaser.Scene {
             if (my.sprite.player.body.blocked.down) {
                 my.vfx.walking.start();
 
-                // FOOTSTEP TIMER
+                // Footstep timer
                 if (this.time.now > this.lastStepTime + this.stepDelay) {
 
                     this.playFootstep();
