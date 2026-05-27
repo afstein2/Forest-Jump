@@ -120,7 +120,13 @@ class Platformer extends Phaser.Scene {
     // OBJECTS  -----------------------------------------------
 
     setupObjects() {
-        // Coins
+
+
+        /* ==================================================
+        * Collidable Objects
+        * ================================================= */
+
+        // Coins ------------------------------------------------
         this.coins = this.map.createFromObjects("Objects", {
             name: "coin", key: "tilemap_sheet", frame: 151
         });
@@ -132,7 +138,7 @@ class Platformer extends Phaser.Scene {
         this.physics.world.enable(this.coins, Phaser.Physics.Arcade.STATIC_BODY);
         this.coinGroup = this.add.group(this.coins);
 
-        // Flags
+        // Flags ------------------------------------------------
         this.flags = this.map.createFromObjects("Objects", {
             name: "flag", key: "tilemap_sheet", frame: 111
         });
@@ -144,7 +150,7 @@ class Platformer extends Phaser.Scene {
         this.physics.world.enable(this.flags, Phaser.Physics.Arcade.STATIC_BODY);
         this.flagGroup = this.add.group(this.flags);
 
-        // Spikes
+         // Spikes ------------------------------------------------
         this.spikes = this.map.createFromObjects("Objects", {
             name: "spike", key: "tilemap_sheet", frame: 68
         });
@@ -156,26 +162,6 @@ class Platformer extends Phaser.Scene {
         this.physics.world.enable(this.spikes, Phaser.Physics.Arcade.STATIC_BODY);
         this.spikeGroup = this.add.group(this.spikes);
 
-
-        // Moving Platforms
-
-
-        // Water Zone
-        this.waterZone = this.add.zone(
-            2150,   // x
-            1000,    // y
-            380,    // width
-            120     // height
-        );
-
-        this.waterZone = this.add.zone(2150, 1000, 380, 120);
-
-        this.physics.world.enable(this.waterZone);
-
-        // IMPORTANT: treat it like an immovable physics body
-        this.waterZone.body.setAllowGravity(false);
-        this.waterZone.body.setImmovable(true);
-        this.waterZone.body.moves = false;
     }
 
 
@@ -190,7 +176,7 @@ class Platformer extends Phaser.Scene {
             "tile_0000.png"
         );
         my.sprite.player.setScale(this.SCALE);
-        my.sprite.player.setCollideWorldBounds(true);
+        my.sprite.player.setCollideWorldBounds(false);
 
         this.physics.add.collider(my.sprite.player, this.groundLayer);
 
@@ -222,6 +208,11 @@ class Platformer extends Phaser.Scene {
             //this.sound.play('death');
             this.playDeath();
         });
+
+
+
+        // Water barrier overlap
+        this.physics.add.collider(my.sprite.player, this.barrier);
         
     }
 
@@ -266,26 +257,6 @@ class Platformer extends Phaser.Scene {
         my.vfx.water = this.add.particles(0, 0, "kenny-particles", {
 
             frame: "bubble_01.png",
-
-            x: { min: 2000, max: 2200 },
-            y: { min: 1200, max: 900 },
-
-            lifespan: 1200,
-
-            speedY: { min: -80, max: -40 },
-            speedX: { min: -10, max: 10 },
-
-            scale: { start: 0.08, end: 0 },
-
-            alpha: { start: 0.8, end: 0 },
-
-            quantity: 1,
-
-            frequency: 120,
-
-            blendMode: 'ADD',
-
-            emitting: false
         });
     }
 
@@ -363,37 +334,95 @@ class Platformer extends Phaser.Scene {
         this.cameras.main.setDeadzone(50, 50);
         this.cameras.main.setZoom(this.SCALE);
     }
+
+
+    startWaterVFX() {
+
+        if (Array.isArray(my.vfx.water)) {
+
+            my.vfx.water.forEach(emitter => emitter.start());
+
+        } else {
+
+            my.vfx.water.start();
+        }
+    }
+
+    stopWaterVFX() {
+
+        if (Array.isArray(my.vfx.water)) {
+
+            my.vfx.water.forEach(emitter => emitter.stop());
+
+        } else {
+
+            my.vfx.water.stop();
+        }
+    }
     
 
 
     update() {
 
-        const touchingWater = this.physics.overlap(my.sprite.player, this.waterZone);
 
 
-        if (!this.physics.overlap(my.sprite.player, this.waterZone)) {
-            my.vfx.water.stop();
+
+        // If out of bounds kill player
+        if (my.sprite.player.y > this.physics.world.bounds.height + 200) {
+
+            my.score = this.savedScore;
+
+            this.playDeath();
+
+            this.scene.restart();
         }
 
 
-        // ENTER WATER
+        // Touching Water
+        const touchingWater = this.physics.overlap(
+            my.sprite.player,
+            this.waterZone
+        );
+
+
+        if (!this.physics.overlap(my.sprite.player, this.waterZone)) {
+
+
+            // Disable Bubble Particles
+            this.stopWaterVFX();
+
+        }
+
+
+        // Enter Water
         if (touchingWater && !this.inWater) {
 
             this.inWater = true;
 
             this.playWater();
 
-            my.vfx.water.start();
+
+            // Enable Bubble particles
+            this.startWaterVFX();
 
             this.physics.world.gravity.y = 400;
         }
 
-        // EXIT WATER
+        // Exit Water
         else if (!touchingWater && this.inWater) {
 
             this.inWater = false;
 
-            my.vfx.water.stop();
+            // Disable Bubble Particles
+            this.stopWaterVFX();
+            // if (Array.isArray(my.vfx.water)) {
+
+            //     my.vfx.water.forEach(emitter => emitter.stop());
+
+            // } else {
+
+            //     my.vfx.water.stop();
+            // }
 
             this.physics.world.gravity.y = 1500;
         } 
